@@ -53,7 +53,7 @@ To get a local copy up and running, follow these simple steps.
     
     ```
     cd frontend
-    npm install
+    npm install //the react app must be hosted with the ip address
     
     ```
     

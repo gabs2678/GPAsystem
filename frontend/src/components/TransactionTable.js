@@ -32,8 +32,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 
-export default function TransactionTable({ data }) {
-  const sortedTransactions = data.sort((a, b) => a.transaction_id - b.transaction_id);
+export default function TransactionTable({ data, filterByAccount }) {
+  const filteredTransactions = data.filter(transaction => transaction.account_number === (filterByAccount==='' ? transaction.account_number:filterByAccount));
+  //filter by id
+  //const sortedTransactions = filteredTransactions.sort((a, b) => a.transaction_id - b.transaction_id);
+  //filter by the date
+  const sortedTransactions = filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 10;
 

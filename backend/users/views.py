@@ -23,15 +23,15 @@ class UserLogin(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def post(self, request):
-        print(request)
+        #print(request)
         data = request.data
         #validate data
         if not validate_email(data):
             return Response({"detail": "Invalid email."}, status=status.HTTP_400_BAD_REQUEST)
         if not validate_password(data):
             return Response({"detail": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
-        assert validate_email(data)
-        assert validate_password(data)
+        # assert validate_email(data)
+        # assert validate_password(data)
         serializer = UserLoginSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.check_user(data)
@@ -39,6 +39,7 @@ class UserLogin(APIView):
                 return Response({"detail": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
             login(request, user)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogout(APIView):
@@ -47,18 +48,7 @@ class UserLogout(APIView):
 	def post(self, request):
 		logout(request)
 		return Response(status=status.HTTP_200_OK)
-# class UserLogout(APIView):
-#     def post(self, request):
-#         if request.user.is_authenticated:
-#             logout(request)
-#             return Response(status=status.HTTP_200_OK)
-#         else:
-#             return Response({"detail": "You are not logged in."}, status=status.HTTP_401_UNAUTHORIZED)
 
-# class UserLogout(APIView):
-#     def post(self,request):
-#         logout(request)
-#         return Response(status=status.HTTP_200_OK)
 
 class UserView(APIView):
     permission_classes = (permissions.IsAuthenticated,)

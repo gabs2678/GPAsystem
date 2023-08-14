@@ -46,7 +46,7 @@ export default function SignIn({ onSuccessfulLogin }) {
     function submitLogin(e) {
         e.preventDefault();
       
-        client.post("/api/login", {
+        client.post("/api/login/", {
             email: email,
             password: password
         })
