@@ -48,7 +48,7 @@ function App() {
   function submitLogout(e) {
     e.preventDefault();
     client.post(
-      "/api/logout",
+      "/api/logout/",
       {withCredentials: true}
     ).then(function(res) {
       setCurrentUser(false);

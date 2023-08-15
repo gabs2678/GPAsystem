@@ -4,6 +4,7 @@ from rest_framework import serializers
 from transactions_Api.models import Transaction
 from accounts_Api.models import Account  # Importing the Account model
 
+
 class TransactionSerializer(serializers.ModelSerializer):
     account_number = serializers.SerializerMethodField()
     account = serializers.PrimaryKeyRelatedField(queryset=Account.objects.all())

@@ -1,14 +1,10 @@
 import React from "react";
 import { Card, CardContent, Typography, Button } from '@mui/material';
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
 
-export default function AccountCard({account })
+export default function AccountCard({account , setCurrentView, setFilterByAccount})
 {
     // for balance
   const formattedBalance = `$${account.current_balance.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
-  const [page, setPage] = React.useState(1);
-  const rowsPerPage = 10;
   
   return (
     <Card>
@@ -22,7 +18,7 @@ export default function AccountCard({account })
         <Typography variant="h6" gutterBottom>
           Current Balance {formattedBalance}
         </Typography>
-        <Button variant="outlined" color="primary">
+        <Button variant="outlined" color="primary" onClick={()=> {setCurrentView('transactions'); setFilterByAccount(account.account_number);}}>
           View Transactions
         </Button>
       </CardContent>

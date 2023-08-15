@@ -91,6 +91,13 @@ export default function Sidebar({username}) {
   //view between accounts and transactions
   const [currentView, setCurrentView] = useState('accounts');
 
+  //error message when creating transaction
+  const [errorMessage, setErrorMessage] = useState("");
+
+  //filter by account state
+  const [filterByAccount, setFilterByAccount] = useState('');
+
+
   //this state is used for create transaction button
   const [createTransaction, setCreateTransaction] = useState(false);
 
@@ -102,6 +109,14 @@ export default function Sidebar({username}) {
     account: '', 
   });
 
+  useEffect(()=>{
+    setTransactionData({
+      amount: '',
+      transaction_type: '',
+      note: '',
+      account: '', 
+    })
+  }, [createTransaction])
   //managing states for account selection
   const [accountDateInput, setAccountDateInput] = useState({
     account: '',
@@ -142,7 +157,7 @@ const getBalanceForDate = () => {
   const createTransactionApiCall = () => {
     console.log("Sending data:", transactionData);
 
-    client2.post('/api/accounts/transactions', {
+    client2.post('/api/accounts/transactions/', {
       transaction_type: transactionData.transaction_type,
       note: transactionData.note,
       amount: transactionData.amount,
@@ -152,17 +167,19 @@ const getBalanceForDate = () => {
     
     .then(response => {
         console.log("Transaction created:", response.data);
+        setTransactions(prev => [...prev, response.data]);
         setCreateTransaction(false);
     })
     .catch(error => {
         console.error("Error creating transaction:", error);
+        setErrorMessage("There was an error creating the transaction.");
     });
   };
   
 
   //Getting the accounts from endpoint api
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/accounts', {withCredentials: true})
+    axios.get('http://127.0.0.1:8000/api/accounts/', {withCredentials: true})
         .then(response => {
             setAccounts(response.data);
         })
@@ -171,7 +188,7 @@ const getBalanceForDate = () => {
         });
         setUser(username);
         if (currentView === 'transactions') {
-          axios.get('http://127.0.0.1:8000/api/accounts/transactions', {withCredentials: true})
+          axios.get('http://127.0.0.1:8000/api/accounts/transactions/', {withCredentials: true})
               .then(response => {
                   setTransactions(response.data);
               })
@@ -214,7 +231,7 @@ const getBalanceForDate = () => {
           {['Accounts', 'Transactions'].map((text, index) => (
             <ListItem key={text} disablePadding>
             {/* onClick is used for chaging the mainView */}
-              <ListItemButton onClick={()=> setCurrentView(text.toLowerCase())}>
+              <ListItemButton onClick={()=> {setCurrentView(text.toLowerCase()); setFilterByAccount('')}}>
                 <ListItemIcon>
                   {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                 </ListItemIcon>
@@ -281,7 +298,7 @@ const getBalanceForDate = () => {
         <Grid container spacing={3}>
           {accounts.map(account => (
             <Grid item key={account.account_number} xs={12} sm={12} md={6} lg={4}>
-              <AccountCard account={account} />
+              <AccountCard account={account} setCurrentView={setCurrentView} setFilterByAccount={setFilterByAccount}/>
             </Grid>
           ))}
         </Grid>
@@ -298,6 +315,7 @@ const getBalanceForDate = () => {
           <Dialog open={createTransaction} onClose={() => setCreateTransaction(false)}>
           <DialogTitle>Create Transaction</DialogTitle>
           <DialogContent>
+          {errorMessage && <div style={{color: 'red'}}>{errorMessage}</div>}
             <DialogContentText>
               Fill in the details to create a new transaction.
             </DialogContentText>
@@ -354,17 +372,18 @@ const getBalanceForDate = () => {
 
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setCreateTransaction(false)} color="primary">
+            <Button onClick={() => {setCreateTransaction(false); setErrorMessage("")}} color="primary">
               Cancel
             </Button>
-            <Button onClick={()=> createTransactionApiCall()} color="primary">
+            <Button onClick={()=> {createTransactionApiCall(); setErrorMessage("")}} color="primary">
               Create
             </Button>
 
           </DialogActions>
         </Dialog>
+        <Button onClick={()=>{setFilterByAccount('');}}>Clear Filter</Button>
 
-          <TransactionTable data = {transactions}></TransactionTable>
+          <TransactionTable data = {transactions} filterByAccount={filterByAccount}></TransactionTable>
           </div>
         )}
       </Main>

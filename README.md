@@ -114,5 +114,3 @@ Project Link: [https://github.com/GabrielDelRio/GCP-Accounting](https://github.c
 
 This `README.md` provides a basic structure for the two projects. You can expand on it by adding more details, screenshots, or any other relevant information.
 
-## Known Bugs
-- the post request fails from the react frontend  

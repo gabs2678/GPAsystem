@@ -11,11 +11,12 @@ from transactions_Api.models import Transaction
 from rest_framework.views import APIView
 from django.db import models
 
+#GET and POST
 class TransactionListCreateView(generics.ListCreateAPIView):
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
 
-    # filters query set so only transactions associate with a user can be displayed, except a admin(superuser)
+    #filters query set so only transactions associate with a user can be displayed, except a admin(superuser)
     def get_queryset(self):
         if self.request.user.is_superuser:
             return Transaction.objects.all()
@@ -25,7 +26,7 @@ class TransactionListCreateView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            # If the user is an admin and provided a date, set it
+            #if the user is an admin and provided a date, set it
             if self.request.user.is_superuser and 'date' in request.data:
                 transaction = serializer.save(date=request.data['date'])
             else:
@@ -55,16 +56,16 @@ class TransactionRetrieveByDate(generics.RetrieveUpdateDestroyAPIView):
         transactions = Transaction.objects.filter(account=account_id, date__lte=date_obj)
 
 
-        balance = 0  # Initialize the balance with an appropriate initial value
-        print(date_obj)
+        balance = 0  #initialize the balance with an appropriate initial value
+        #print(date_obj)
 
         for transaction in transactions:
             if transaction.transaction_type == 'CREDIT':
-                balance += transaction.amount  # Add the amount for CREDIT
+                balance += transaction.amount  #add the amount for CREDIT
             elif transaction.transaction_type == 'DEBIT':
-                balance -= transaction.amount  # Subtract the amount for DEBIT
+                balance -= transaction.amount  #subtract the amount for DEBIT
 
-        print(transactions.values('date'))
+        #print(transactions.values('date'))
 
 
         return JsonResponse({'balance': balance}, status=200)
